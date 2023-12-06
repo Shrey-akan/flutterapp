@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jobmobapp/src/login/login.dart';
 
+import 'package:jobmobapp/src/question_paper/question_paper_page.dart'; // Import the QuestionPage
+
 class JobListPage extends StatefulWidget {
   const JobListPage({Key? key}) : super(key: key);
 
@@ -65,11 +67,16 @@ class _JobListPageState extends State<JobListPage> {
   }
 
   void _handleApply(JobPost job) {
-    bool isLoggedIn = false; // Replace with your actual login check logic
+    bool isLoggedIn = true; // Replace with your actual login check logic
 
     if (isLoggedIn) {
-      // Perform apply logic
+      // If the user is logged in, navigate to the QuestionPage
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const QuestionPaperPage()),
+      );
     } else {
+      // If the user is not logged in, navigate to the login screen
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),

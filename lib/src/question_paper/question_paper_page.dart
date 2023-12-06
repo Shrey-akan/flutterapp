@@ -1,18 +1,20 @@
 // question_paper_page.dart
 import 'package:flutter/material.dart';
+import 'package:jobmobapp/src/jobapplyform/jobapply_form.dart';
+// import 'package:jobmobapp/src/postjobform/postjob.dart';
+
 
 class QuestionPaperPage extends StatefulWidget {
   const QuestionPaperPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _QuestionPaperPageState createState() => _QuestionPaperPageState();
 }
 
 class _QuestionPaperPageState extends State<QuestionPaperPage> {
   // List of questions
   List<Question> questions = [
-   Question(
+    Question(
       'What is the main function used for in Java?',
       ['Starting the program', 'Defining variables', 'Performing calculations', 'Handling exceptions'],
       'Starting the program',
@@ -110,23 +112,30 @@ class _QuestionPaperPageState extends State<QuestionPaperPage> {
 
   void showResults() {
     int totalScore = calculateScore();
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Quiz Results'),
-          content: Text('Your total score is: $totalScore out of ${questions.length * 5} marks.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+    if (totalScore > 20) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const JobApplicationPage(jobTitle: '', companyName: '',)), // Replace ApplyFormPage with the actual page/widget you want to navigate to
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Quiz Results'),
+            content: Text('Your total score is: $totalScore out of ${questions.length * 5} marks.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   int calculateScore() {

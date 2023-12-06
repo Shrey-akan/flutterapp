@@ -20,23 +20,60 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  bool isUserLoggedIn = false; // Example login status
+  bool isUserLoggedIn = false;
+  int _selectedIndex = 0;
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text('Home Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Search Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Profile Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if ((_selectedIndex == 1 || _selectedIndex == 2) && !isUserLoggedIn) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      } else if (_selectedIndex == 1 && isUserLoggedIn) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const JobListPage()),
+        );
+      } else if (_selectedIndex == 2 && isUserLoggedIn) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfilePage()),
+        );
+      }
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('job4jobless Job Search'),
+        title: const Text('job4jobless'),
         actions: [
           IconButton(
             icon: Icon(isUserLoggedIn ? Icons.logout : Icons.login),
             onPressed: () {
-              // Toggle login status and update UI
               setState(() {
                 isUserLoggedIn = !isUserLoggedIn;
               });
-
-              // Perform additional actions if needed, like sign out logic
               if (!isUserLoggedIn) {
                 // Sign out logic
               }
@@ -54,6 +91,7 @@ class _LandingPageState extends State<LandingPage> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
                     'Welcome to job4jobless!',
@@ -61,14 +99,13 @@ class _LandingPageState extends State<LandingPage> {
                   ),
                   const SizedBox(height: 10),
                   Image.asset(
-                    'assets/job4jobless logo@4x-8.png',
+                    'assets/icon/white icon@4x-8.png',
                     height: 80,
                     width: 80,
                   ),
                 ],
               ),
             ),
-            // Drawer items based on login status
             ListTile(
               title: const Text('Home'),
               onTap: () {
@@ -78,10 +115,17 @@ class _LandingPageState extends State<LandingPage> {
             ListTile(
               title: const Text('Explore Jobs'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const JobListPage()),
-                );
+                if (!isUserLoggedIn) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const JobListPage()),
+                  );
+                }
               },
             ),
             if (isUserLoggedIn)
@@ -131,24 +175,26 @@ class _LandingPageState extends State<LandingPage> {
                 );
               },
             ),
-            ListTile(
-              title: const Text('Chat'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ChatPage()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text('Question Paper'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const QuestionPaperPage()),
-                );
-              },
-            ),
+            if (isUserLoggedIn)
+              ListTile(
+                title: const Text('Job Applications'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => JobApplications()),
+                  );
+                },
+              ),
+            if (isUserLoggedIn)
+              ListTile(
+                title: const Text('Resume Builder'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ResumeBuilder()),
+                  );
+                },
+              ),
             ListTile(
               title: const Text('Help Center'),
               onTap: () {
@@ -159,72 +205,82 @@ class _LandingPageState extends State<LandingPage> {
               },
             ),
             ListTile(
-              title: const Text('Resume Builder'),
+              title: const Text('Question Paper'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => isUserLoggedIn ? const ResumeBuilder() : const LoginScreen()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text('Job Applications'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => isUserLoggedIn ? JobApplications() : const LoginScreen()),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Find Your Dream Job with job4jobless',
-              style: TextStyle(fontSize: 24),
-            ),
-            const SizedBox(height: 20),
-            Image.asset(
-              'assets/iindeed_image.png',
-              height: 200,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const JobListPage()),
-                );
-              },
-              child: const Text('Explore Jobs'),
-            ),
-            if (!isUserLoggedIn)
-              ElevatedButton(
-                onPressed: () {
+                if (isUserLoggedIn) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ProfilePage()),
+                    MaterialPageRoute(builder: (context) => const QuestionPaperPage()),
                   );
-                },
-                child: const Text('View Profile'),
-              ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const StepperExampleApp()),
-                );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                }
               },
-              child: const Text('PostJob'),
             ),
           ],
         ),
       ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Center(
+              child: Image.asset(
+                'assets/iindeed_image.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Your content goes here.',
+              style: TextStyle(fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+            backgroundColor: Colors.green,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+            backgroundColor: Colors.yellow,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+            backgroundColor: Colors.blue,
+          ),
+        ],
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        iconSize: 40,
+        onTap: _onItemTapped,
+        elevation: 5,
+      ),
+      floatingActionButton: isUserLoggedIn
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ChatPage()),
+                );
+              },
+              tooltip: 'Chat',
+              child: Icon(Icons.chat),
+            )
+          : null,
     );
   }
 }
