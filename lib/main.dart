@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         hintColor: Colors.cyanAccent,
         // Add more dark theme configurations if necessary
       ),
-      home: const LandingPage(),
+      home: const LandingPage(accessToken: '', refreshToken: '', isUserLoggedIn: false, uid: '',),
     );
   }
 }

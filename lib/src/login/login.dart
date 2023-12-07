@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
+import 'package:jobmobapp/src/landing/landing_page.dart';
 import 'dart:convert';
 
 import 'package:jobmobapp/src/register/register.dart';
@@ -8,7 +9,8 @@ import 'package:jobmobapp/src/register/register.dart';
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
-  Future<void> loginUser(BuildContext context, String username, String password) async {
+  Future<void> loginUser(
+      BuildContext context, String username, String password) async {
     try {
       final response = await http.post(
         Uri.parse('https://job4jobless.com:9001/logincheck'),
@@ -21,24 +23,29 @@ class LoginScreen extends StatelessWidget {
         }),
       );
 
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
-        // Successful login
-        print('Login successful');
-
-        // Parse the response body and handle the access token and refresh token
         final Map<String, dynamic> responseBody = json.decode(response.body);
-        final String accessToken = responseBody['accessToken'];
-        final String refreshToken = responseBody['refreshToken'];
-
-        // You may want to store these tokens securely for future requests
-
-        // Navigate to the home screen or perform other actions upon successful login
-        // For example, you can replace the line below with your navigation logic
-        Navigator.pushReplacementNamed(context, '/home');
+        final String accessToken = responseBody['accessToken'] ?? '';
+        final String refreshToken = responseBody['refreshToken'] ?? '';
+        var uid = responseBody['uid'] ?? '';
+        
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LandingPage(
+              accessToken: accessToken,
+              refreshToken: refreshToken,
+              isUserLoggedIn: true,
+              uid: uid,
+            ),
+          ),
+        );
       } else if (response.statusCode == 401) {
-        // Unauthorized (Login failed)
         print('Login failed - Unauthorized');
-        // Show an error message to the user
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid username or password'),
@@ -46,23 +53,21 @@ class LoginScreen extends StatelessWidget {
           ),
         );
       } else {
-        // Other error status codes
         print('Login failed - ${response.statusCode}');
-        // Handle the error, e.g., show a generic error message to the user
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('An error occurred. Please try again later.'),
+            content:
+                Text('An error occurred checking . Please try again later.'),
             duration: Duration(seconds: 3),
           ),
         );
       }
     } catch (e) {
-      // Handle any exceptions that may occur during the HTTP request
       print('An error occurred: $e');
-      // Show an error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('An error occurred. Please try again later.'),
+          content: Text('An error occurred check. Please try again later.'),
           duration: Duration(seconds: 3),
         ),
       );
@@ -71,6 +76,9 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String username = '';
+    String password = '';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),
@@ -82,17 +90,31 @@ class LoginScreen extends StatelessWidget {
           children: [
             TextFormField(
               decoration: const InputDecoration(labelText: 'Username'),
+              onChanged: (value) {
+                username = value;
+              },
             ),
             const SizedBox(height: 16),
             TextFormField(
               decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
+              onChanged: (value) {
+                password = value;
+              },
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // Add your login logic here
-                loginUser(context, 'user', 'password'); // Replace with actual username and password
+                if (username.isNotEmpty && password.isNotEmpty) {
+                  loginUser(context, username, password);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter both username and password'),
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
+                }
               },
               child: const Text('Login'),
             ),
@@ -102,27 +124,23 @@ class LoginScreen extends StatelessWidget {
               color: Colors.black,
             ),
             const SizedBox(height: 16),
-            // Add Google icon for social login using SvgPicture
             InkWell(
               onTap: () {
-                // Add your Google login logic here
                 print('Google login button pressed');
               },
               child: SvgPicture.asset(
-                'assets/google_icon.svg', // Replace with your Google SVG icon path
+                'assets/google_icon.svg',
                 height: 40,
                 width: 40,
               ),
             ),
             const SizedBox(height: 16),
-            // Add Google icon for social login using Image.asset
             InkWell(
               onTap: () {
-                // Add your Google login logic here
                 print('Google login button pressed');
               },
               child: Image.asset(
-                'assets/icon/google_icon.png', // Replace with your Google icon image path
+                'assets/icon/google_icon.png',
                 height: 40,
                 width: 40,
               ),
@@ -130,7 +148,6 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 16),
             TextButton(
               onPressed: () {
-                // Navigate to the registration page
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => RegisterScreen()),

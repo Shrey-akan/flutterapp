@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobmobapp/src/chat/chat.dart';
 import 'package:jobmobapp/src/jobapplication/jobapplication.dart';
-import 'package:jobmobapp/src/postjobform/postjob.dart';
 import 'package:jobmobapp/src/question_paper/question_paper_page.dart';
 import 'package:jobmobapp/src/resume/resume.dart';
 import 'package:jobmobapp/src/settings/cookies_page.dart';
@@ -13,16 +12,38 @@ import '../login/login.dart';
 import '../profile/profile.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({Key? key}) : super(key: key);
+  const LandingPage({
+    Key? key,
+    required String accessToken,
+    required String refreshToken,
+    required bool isUserLoggedIn,
+    required String uid,
+  })  : _accessToken = accessToken,
+        _refreshToken = refreshToken,
+        _isUserLoggedIn = isUserLoggedIn,
+        _uid = uid,
+        super(key: key);
+
+  final String _accessToken;
+  final String _refreshToken;
+  final bool _isUserLoggedIn;
+  final String _uid;
 
   @override
   _LandingPageState createState() => _LandingPageState();
 }
 
 class _LandingPageState extends State<LandingPage> {
-  bool isUserLoggedIn = false;
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    // Update isUserLoggedIn based on the initial value
+    isUserLoggedIn = widget._isUserLoggedIn;
+  }
+
+  bool isUserLoggedIn = false;
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Home Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
     Text('Search Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
@@ -50,17 +71,6 @@ class _LandingPageState extends State<LandingPage> {
       }
     });
   }
-
-
-
-
-
-
-
-
-
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +151,7 @@ class _LandingPageState extends State<LandingPage> {
             else
               ListTile(
                 title: const Text('Sign In'),
-                onTap: () {
+                onTap: () { 
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const LoginScreen()),
